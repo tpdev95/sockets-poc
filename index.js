@@ -24,7 +24,12 @@ const server = app.listen(
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
 );
 
-websockets(server);
+const ws = websockets(server);
+
+app.locals.ws = ws;
+
+
+
 
 // const webSocketServer = require("websocket").server;
 // const http = require("http");

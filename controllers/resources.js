@@ -1,11 +1,12 @@
 const ResourceModel = require("../models/ResourceModel");
-const ws = require("../");
+const wsBroadcast = require("../utils");
 
 resources_list = async (req, res) => {
   try {
     const resources = await ResourceModel.findAll();
     return res.status(200).json(resources);
   } catch (err) {
+    console.log("err:", err);
     return res.status(500).json({
       error: err,
     });
@@ -15,17 +16,16 @@ resources_list = async (req, res) => {
 add_resource = async (req, res) => {
   const { name, type } = req.body;
 
-  const ws = await req.app.locals.ws;
+  const wsClients = req.app.locals.wsClients;
   try {
     if ((name, type)) {
       const resource = await ResourceModel.create(req.body);
       //Just to test sending message based on a post(use db watcher in the future)
-      // const resources = await ResourceModel.findAll();
-      // console.log("zz-aca:", Array.from(ws.clients)) //ACA BUSCA POR ID
+      wsBroadcast(wsClients, "update_resources");
       return res.status(200).json(req.body);
     }
   } catch (err) {
-    console.log("zz-err:", err)
+    console.log("err:", err);
     return res.status(500).json({
       error: err,
     });
